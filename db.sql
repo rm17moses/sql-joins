@@ -45,23 +45,61 @@ from playlists
     JOIN tracks ON tracks.TrackId = playlist_track.TrackId
 WHERE playlists.Name = "Music";
 -- Find all artists for a given genre
-SELECT DISTINCT artists.Name 
+SELECT DISTINCT artists.Name
 FROM genres
     join tracks on genres.GenreId = tracks.GenreId
     JOIN albums on tracks.TrackId = albums.ArtistId
     JOIN artists on albums.ArtistId = artists.ArtistId
 WHERE genres.Name = "Classical";
 -- Find the Playlist with the most / least songs
-SELECT playlists.Name, count(*) AS Song_Count
+SELECT playlists.Name,
+    count(*) AS SongCount
 from playlists
     join playlist_track on playlist_track.PlaylistId = playlists.PlaylistId
-    join tracks on tracks.TrackId = playlist_track.TrackId
-    join albums on albums.AlbumId = tracks.AlbumId
-    join artists on artists.ArtistId = albums.ArtistId
-    GROUP BY playlists.Name
-    ORDER BY Song_Count DESC LIMIT 1;
+GROUP BY playlists.Name
+ORDER BY SongCount DESC
+LIMIT 1;
 
+SELECT playlists.Name,
+    count(*) AS SongCount
+from playlists
+    join playlist_track on playlist_track.PlaylistId = playlists.PlaylistId
+GROUP BY playlists.Name
+ORDER BY count(*) ASC
+LIMIT 1;
 -- Find the total for a given invoice (will need a sum)
+SELECT invoices.InvoiceId AS Invoice_ID,
+    'R' || invoices.Total AS Total
+FROM invoices
+WHERE invoices.InvoiceId = 1;
 
-SELECT * FROM invoices
-WHERE 
+-- Find all the playlists containing a given genre
+
+SELECT DISTINCT playlists.Name AS Playlists
+FROM playlists
+    JOIN playlist_track on playlists.PlaylistId = playlist_track.PlaylistId
+JOIN tracks ON playlist_track.TrackId = tracks.TrackId
+JOIN genres ON tracks.GenreId = genres.GenreId
+WHERE genres.Name = "Rock";
+
+
+--  Find the biggest/smallest invoice amounts
+
+SELECT InvoiceId, Min(Total) FROM invoices;
+SELECT InvoiceId, Max(Total) FROM invoices;
+
+-- Find the artist with the most/least songs
+
+SELECT artists.Name AS Artists, count(*) AS Track_Count
+FROM artists
+JOIN albums on albums.ArtistId = artists.ArtistId
+JOIN tracks on tracks.AlbumId = albums.AlbumId
+GROUP BY artists.Name
+ORDER BY Track_Count DESC LIMIT 1;
+
+SELECT artists.Name AS Artists, count(*) AS Track_Count
+FROM artists
+JOIN albums on albums.ArtistId = artists.ArtistId
+JOIN tracks on tracks.AlbumId = albums.AlbumId
+GROUP BY artists.Name
+ORDER BY Track_Count ASC LIMIT 1;
